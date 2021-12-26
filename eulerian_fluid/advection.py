@@ -56,17 +56,17 @@ class AdvectionOp:
     def advect_mc(self, v: ti.template(), q_in: ti.template(),
                   q_out: ti.template(), q_tmp: ti.template(), dt: ti.f32):
         # MacCormack
-        for I in ti.grouped(q_in):
+        for I in ti.grouped(q_in.field):
             p = q_in.I2p(I)
             p = self.backtrace(v, p, dt)
             q_out[I] = q_in.sample(p)
 
-        for I in ti.grouped(q_in):
+        for I in ti.grouped(q_in.field):
             p = q_in.I2p(I)
             p = self.backtrace(v, p, -dt)
             q_tmp[I] = q_out.sample(p)
 
-        for I in ti.grouped(q_in):
+        for I in ti.grouped(q_in.field):
             p = q_in.I2p(I)
             p_src = self.backtrace(v, p, dt)
             p_sl = q_in.sample(p_src)

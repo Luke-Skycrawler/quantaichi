@@ -253,7 +253,7 @@ class FluidSolver(FluidSolverBase):
             self.coarsened_density_map[I] = 0
 
         # Re-compute a density spatial histogram
-        for I in ti.grouped(dye):
+        for I in ti.grouped(dye.field):
             density = dye[I].norm()
             if density > 0.1:
                 # populate neighbors
@@ -272,7 +272,7 @@ class FluidSolver(FluidSolverBase):
     @ti.kernel
     def inflow(self, v: ti.template(), dyef: ti.template(), t: ti.f32,
                dt: ti.f32):
-        for I in ti.grouped(v):
+        for I in ti.grouped(v.field):
             d2 = 0.0
             for k in ti.static(range(self.dim)):
                 d2 += (I[k] + 0.5 - self.source_positions[k])**2
@@ -308,7 +308,7 @@ class FluidSolver(FluidSolverBase):
     def buoyancy(self, v: ti.template(), dyef: ti.template(), t: ti.f32,
                  dt: ti.f32):
 
-        for I in ti.grouped(v):
+        for I in ti.grouped(v.field):
             dc = dyef[I]
             dc_norm = dc.norm()
             dc_norm = min(dc_norm, 1.)
@@ -317,7 +317,7 @@ class FluidSolver(FluidSolverBase):
 
     @ti.kernel
     def compute_div_and_init_pressure_solver(self, v: ti.template()):
-        for I in ti.grouped(v):
+        for I in ti.grouped(v.field):
             div = 0.0
             for k in ti.static(range(self.dim)):
                 ni = I  # neighbor index
@@ -332,7 +332,7 @@ class FluidSolver(FluidSolverBase):
     @ti.kernel
     def apply_pressure_with_adjustments(self, v: ti.template(),
                                         pressure: ti.template()):
-        for I in ti.grouped(v):
+        for I in ti.grouped(v.field):
             pdiff = ti.Vector.zero(ti.f32, self.dim)
             for k in ti.static(range(self.dim)):
                 ni = I  # neighbor index
@@ -384,7 +384,7 @@ class FluidSolver(FluidSolverBase):
             a[I] = b[I] * 2 - a[I]
 
     def reflect(self):
-        self.copy(self.v[3], self.v[0])
+        self.copy(self.v[3].field, self.v[0].field)
         self.project(self.v[3])
         # v = v_divfree * 2 - v
         self.reflect_field(self.v[0].field, self.v[3].field)

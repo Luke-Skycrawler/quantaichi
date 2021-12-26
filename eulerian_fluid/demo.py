@@ -90,8 +90,8 @@ if __name__ == '__main__':
         debug=args.debug,
         kernel_profiler=True,
         async_mode=args.async_mode,
-        device_memory_fraction=0.9,
-        use_unified_memory=False)
+        device_memory_fraction=0.9) #,
+        # use_unified_memory=False)
 
     res = args.res
     dim = args.dim
