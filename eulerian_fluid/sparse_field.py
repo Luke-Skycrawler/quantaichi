@@ -21,7 +21,7 @@ class SparseField:
         self.offset = tuple(offset)
         self.inv_dx = inv_dx
         self.dx = 1 / self.inv_dx
-
+        self.__getitem__ = self.__getitem__2 if self.dim == 2 else self.__getitem__3
         if field is not None:
             assert vector_width is None
             # assert field.dtype == dtype
@@ -115,9 +115,12 @@ class SparseField:
         return min1, max1
 
     @ti.func
-    def __getitem__(self, a,b,c):
+    def __getitem__3(self, a,b,c):
         return ti.subscript(self.field, a,b,c)
         # return self.field[a,b,c]
+    @ti.func
+    def __getitem__2(self, a,b):
+        return ti.subscript(self.field, a,b)
 
     @ti.func
     def I2p(self, I):

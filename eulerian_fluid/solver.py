@@ -586,7 +586,7 @@ class FluidSolver(FluidSolverBase):
     @ti.kernel
     def sum_density(self, dyef: ti.template()) -> ti.f64:
         self.dye_sum[None] = 0.0
-        for I in ti.grouped(dyef):
+        for I in ti.grouped(dyef.field):
             for k in ti.static(range(self.dim)):
                 self.dye_sum[None] += dyef[I][k]
         return self.dye_sum[None]

@@ -8,5 +8,6 @@ tmp*
 video
 __pycache__
 rec
+*.png
 *.zip
 .*.swp
